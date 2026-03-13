@@ -1,21 +1,36 @@
 package mil.t2com.moda.todo.task;
 
-//@SpringBootTest
-//@Transactional
-//@AutoConfigureMockMvc
+
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import tools.jackson.databind.ObjectMapper;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@SpringBootTest
+@Transactional
+@AutoConfigureMockMvc
 public class TaskControllerIntegrationTest {
 
-//    @Autowired
-//    private MockMvc mockMvc;
-//
-//    @Autowired
-//    private ObjectMapper objectMapper;
-//
-//    @Autowired
-//    private TaskService taskService;
-//
-//    // Setup test objects
-//
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private TaskService taskService;
+
+    // Setup test objects
+
 //    @BeforeEach
 //    void setUp() {
 //        learnTdd = new Task( "Learn TDD", "research TDD", false, started);
