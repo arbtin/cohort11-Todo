@@ -1,11 +1,15 @@
 package mil.t2com.moda.todo.task;
 
 import mil.t2com.moda.todo.category.Category;
+import mil.t2com.moda.todo.category.CategoryRepository;
+import mil.t2com.moda.todo.category.CategoryService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -15,6 +19,9 @@ class TaskServiceTest {
 
     @Mock
     private TaskRepository taskRepository;
+
+    @Mock
+    private CategoryService categoryService;
 
     @InjectMocks
     TaskService taskService;
@@ -43,6 +50,23 @@ class TaskServiceTest {
         assertThat(result.getCategory().getLabel()).isEqualTo("important");
 
         verify(taskRepository, only()).save(newTask);
+    }
+
+    @Test
+    void shouldSaveNewTaskWithNewCategory() {
+        // Arrange
+        Category newCategory = new Category("important");
+        Task newTask = new Task("Learn about Mocks", "Learn about Inject mocks", false, newCategory);
+        newTask.setId(1L);
+
+        // Act
+        when(categoryService.findCategoryByLabel(newCategory.getLabel())).thenReturn(Optional.of(newCategory));
+        when(taskRepository.save(newTask)).thenReturn(newTask);
+
+        Task result = taskService.saveTask(newTask);
+
+        verify(categoryService, only()).findCategoryByLabel(newCategory.getLabel());
+
     }
 
 }

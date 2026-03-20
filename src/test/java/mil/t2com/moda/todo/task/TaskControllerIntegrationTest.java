@@ -2,6 +2,7 @@ package mil.t2com.moda.todo.task;
 
 import jakarta.transaction.Transactional;
 import mil.t2com.moda.todo.category.Category;
+import mil.t2com.moda.todo.category.CategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class TaskControllerIntegrationTest {
     @Autowired
     private TaskService taskService;
 
+    @Autowired
+    private CategoryService categoryService;
+
     // Setup test objects
     Task learnTdd;
     Category started;
@@ -62,8 +66,10 @@ public class TaskControllerIntegrationTest {
 
     @Test
     public void shouldGetAllTasks() throws Exception {
-        taskService.saveTask(new Task("Learn TDD", "tdd is good", false, started));
-        taskService.saveTask(new Task("Practice TDD", "more tdd", false, new Category("finished")));
+        Category finished = categoryService.saveCategory(new Category("Finished"));
+        Category started = categoryService.saveCategory(new Category("Started"));
+        taskService.saveTask(new Task("Learn TDD", "tdd is good", false, finished));
+        taskService.saveTask(new Task("Practice TDD", "more tdd", false, started));
         // Assert
         mockMvc.perform(get("/api/v1/task"))
                 .andExpect(status().isOk())
@@ -72,17 +78,17 @@ public class TaskControllerIntegrationTest {
                 .andExpect(jsonPath("$[0].title").value("Learn TDD"))
                 .andExpect(jsonPath("$[1].title").value("Practice TDD"))
                 //.andExpect(jsonPath("$[0].category.id").value(1L))
-                .andExpect(jsonPath("$[0].category.label").value("started"))
-                .andExpect(jsonPath("$[1].category.label").value("finished"));
+                .andExpect(jsonPath("$[0].category.label").value("Finished"))
+                .andExpect(jsonPath("$[1].category.label").value("Started"));
                 //.andExpect(jsonPath("$[1].id").value(2L))
     }
 
     @Test
     public void shouldGetTaskById() throws Exception {
-        // Act
+        // Arrange
         Task savedTask = taskService.saveTask(new Task("blank task", "no description", false, new Category("failed")));
 
-        //
+        // Act
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/task/" + savedTask.getId()))
                 .andExpect(status().isOk())
                 //.andExpect(jsonPath("$.id").value(1L))
