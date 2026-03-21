@@ -33,5 +33,8 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    // ADD with Tests for: GetById, Put, Delete
+    public Task findTaskById(Long id) {
+            return taskRepository.findById(id).orElseThrow();
+    }
+    // ADD with Tests for:  Put, Delete
 }
