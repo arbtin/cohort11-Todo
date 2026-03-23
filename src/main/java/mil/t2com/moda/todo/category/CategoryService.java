@@ -2,6 +2,7 @@ package mil.t2com.moda.todo.category;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,17 +18,32 @@ public class CategoryService {
     }
 
     public Category createCategoryIfNotExists(String label) {
-        Optional<Category> queryCategory = categoryRepository.findByLabel(label);
+        if (label == null || label.trim().isEmpty()) {
+            throw new IllegalArgumentException("Label cannot be null or empty");
+        }
 
-        if(queryCategory.isEmpty()) { return categoryRepository.save(new Category(label)); }
+        String findTrimmedLabel = label.trim();
+        String formattedLabel = Character.toUpperCase(findTrimmedLabel.charAt(0)) + findTrimmedLabel.substring(1);
 
-        return queryCategory.get();
+        return categoryRepository.findByLabel(formattedLabel).orElseGet(() -> categoryRepository.save(new Category(formattedLabel)));
+
+        // Refactored below to make the above cleaner, left it here so you can see the changes:
+//        if(queryCategory.isEmpty()) {
+//            String trimmedLabel = label.trim();
+//            return categoryRepository.save(new Category(Character.toUpperCase(trimmedLabel.charAt(0)) + trimmedLabel.substring(1)));
+//        }
+//
+//        return queryCategory.get();
     }
 
-    public Optional<Category> findCategoryByLabel(String label) {
-        return categoryRepository.findByLabel(label);
+    public Optional<Category> findCategoryByLabel(String label) { return categoryRepository.findByLabel(label); }
+
+    public List<Category> findAllCategories() {
+        return categoryRepository.findAll();
     }
 
-    // ADD with Tests for: GetById, Put, Delete
+    public Optional<Category> findCategoryById(Long id) { return categoryRepository.findById(id); }
+
+    // ADD with Tests for: Put, Delete
 
 }

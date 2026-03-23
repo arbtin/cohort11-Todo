@@ -9,8 +9,11 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
@@ -41,7 +44,7 @@ class TaskControllerTest {
 
     @Captor
     ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
-    ArgumentCaptor<List<Task>> captors = ArgumentCaptor.forClass(List.class);
+    //ArgumentCaptor<List<Task>> captors = ArgumentCaptor.forClass(List.class);
 
     String enablement = "enablement";
     Task learnHttpMethods;
@@ -114,13 +117,22 @@ class TaskControllerTest {
 
         when(taskService.findAllTasks()).thenReturn(tasks);
 
-        mockMvc.perform(get("/api/v1/task"))
-                // result matchers
+        MvcResult results = mockMvc.perform(get("/api/v1/task")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andReturn();
+
+        // Deserialize JSON response into List<Task>
+        String jsonResponse = results.getResponse().getContentAsString();
+        List<Task> responseTasks = objectMapper.readValue(
+                jsonResponse,
+                new TypeReference<List<Task>>() {}
+        );
+
+        // Assert deep equality
+        assertThat(responseTasks).isEqualTo(tasks);
 
         verify(taskService, times(1)).findAllTasks();
-        assertThat(captors.getAllValues()).usingRecursiveComparison().isEqualTo(tasks);
         verify(taskService, only()).findAllTasks();
     }
 
