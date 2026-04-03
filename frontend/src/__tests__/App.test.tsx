@@ -27,7 +27,6 @@ describe('App.tsx', () => {
 
         expect(screen.getByRole('button', {name:/1/i})).toBeInTheDocument();
 
-
     });
 
 });
