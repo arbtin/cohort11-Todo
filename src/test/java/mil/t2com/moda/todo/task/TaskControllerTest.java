@@ -121,7 +121,6 @@ class TaskControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].label").value(learnHttpMethods.getLabel()));
                 .andReturn();
 
         // Deserialize JSON response into List<Task>

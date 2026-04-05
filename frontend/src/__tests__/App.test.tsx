@@ -12,7 +12,6 @@ describe('App.tsx', () => {
     expect(
       screen.getByRole('heading', { name: /started/i }),
     ).toBeInTheDocument();
-    screen.logTestingPlaygroundURL();
   });
 
   it('should count button increment counter', async () => {
