@@ -102,6 +102,5 @@ export const TaskForm = ({isOpen, onClose, onSuccess}: TaskFormProps) => {
                 </form>
             </div>
         </div>
-    )
-        ;
+    );
 }

@@ -3,7 +3,7 @@ import {TaskForm} from "../TaskForm.tsx";
 import {expect} from "vitest";
 import {userEvent} from "@testing-library/user-event";
 import * as taskApi from "../TaskService.ts";
-import type {Category} from "../TaskType.ts";
+import type {Category} from "../../category/CategoryType.ts";
 
 vi.mock('../TaskService.ts');
 

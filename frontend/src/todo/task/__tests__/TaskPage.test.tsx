@@ -2,12 +2,14 @@ import { render, screen, within } from '@testing-library/react';
 import { expect } from 'vitest';
 import { TaskPage } from '../TaskPage.tsx';
 import * as taskApi from '../TaskService.ts';
+import type {Category} from "../../category/CategoryType.ts";
 
 vi.mock('../TaskService.ts');
 
+const category: Category = {id:'1', label:'testing'}
 const mockData = [
-  { id: 1, title: 'First Task', description: 'get task component built.' },
-  { id: 2, title: 'Second Task', description: 'use new task component.' },
+  { id: 1, title: 'First Task', description: 'get task component built.', category: category },
+  { id: 2, title: 'Second Task', description: 'use new task component.', category: category },
 ];
 
 describe('Task Page', () => {

@@ -2,12 +2,12 @@ import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { expect } from 'vitest';
 //import userEvent from "@testing-library/user-event";
-import App from '../App.tsx';
+import ReactVite from "../ReactVite.tsx";
 
 describe('App.tsx', () => {
   it('should display heading', () => {
     // Arrange
-    render(<App />);
+    render(<ReactVite />);
     // Assert
     expect(
       screen.getByRole('heading', { name: /started/i }),
@@ -16,9 +16,9 @@ describe('App.tsx', () => {
 
   it('should count button increment counter', async () => {
     // Arrange
-    render(<App />);
+    render(<ReactVite />);
     const user = userEvent.setup();
-    const button = screen.getByRole('button', { name: /count/i });
+    const button = screen.getByRole('button', { name: /0/i });
 
     expect(screen.getByRole('button', { name: /0/i })).toBeVisible();
 
