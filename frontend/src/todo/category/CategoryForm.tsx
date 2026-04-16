@@ -1,5 +1,5 @@
 import {useForm} from "react-hook-form";
-import type {Task} from "./TaskType.ts";
+import type {Category, Task} from "../task/TaskType.ts";
 import {yupResolver} from "@hookform/resolvers/yup/src";
 import * as Yup from "yup";
 import {number, string} from "yup";
@@ -16,11 +16,11 @@ export const CategoryForm = () => {
         register,
         handleSubmit,
         formState: {errors}
-    } = useForm<Task>({
+    } = useForm<Category>({
         resolver: yupResolver(validationSchema)
     });
 
-    const onSubmit = (data: Task) => {
+    const onSubmit = (data: Category) => {
         axiosSaveCategory(data);
     }
 

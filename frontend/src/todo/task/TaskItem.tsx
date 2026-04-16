@@ -7,11 +7,11 @@ type TaskItemProps = {
 export const TaskItem = ({ initialTask }: TaskItemProps) => {
   return (
     <li
-      className="p-1"
+      className="p-1 card"
       aria-label={`Task ${initialTask.id}`}
       id={initialTask.id}
     >
-      {initialTask.title}: {initialTask.description}
+      <b>{initialTask.title}</b><br/> {initialTask.description}
     </li>
   );
 };

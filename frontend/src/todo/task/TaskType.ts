@@ -1,11 +1,11 @@
 export type Task = {
-  id?: number | null;
+  id?: number | string | null;
   title: string;
   description: string;
   category: Category;
 };
 
 export type Category = {
-  id: number;
+  id?: number | string | undefined;
   label: string;
 }

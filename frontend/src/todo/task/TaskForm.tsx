@@ -4,6 +4,7 @@ import {number, string} from "yup";
 import {axiosSaveTask} from "./TaskService.ts";
 import type {Task} from "./TaskType.ts";
 import {yupResolver} from "@hookform/resolvers/yup/src";
+import {useEffect} from "react";
 
 const validationSchema = Yup.object({
         id: number(),
@@ -12,34 +13,95 @@ const validationSchema = Yup.object({
     }
 );
 
-export const TaskForm = () => {
+type TaskFormProps = {
+    isOpen: boolean;
+    onClose: () => void;
+    onSuccess?: () => void;
+}
+
+export const TaskForm = ({isOpen, onClose, onSuccess}: TaskFormProps) => {
     const {
         register,
         handleSubmit,
+        reset,
         formState: {errors}
     } = useForm<Task>({
+        mode: "onBlur",
         resolver: yupResolver(validationSchema)
     });
 
-    const onSubmit = (data: Task) => {
-        axiosSaveTask(data);
+    useEffect(() => {
+        if(!isOpen) {
+            reset();
+        }
+    }, [isOpen]);
+
+    const onSubmit = async (data: Task) => {
+        await axiosSaveTask(data);
+        reset();
+        onSuccess?.();
+        onClose();
     }
 
+    if (!isOpen) return null;
+
     return (
-        <>
-            <h2>Task Form</h2>
-            <form onSubmit={handleSubmit(data => onSubmit(data))} method={'POST'}>
-                <label htmlFor={'Title'}>Title</label>
-                <input id={'Title'} type={'text'} {...register('title')}/>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div
+                aria-label="Close modal"
+                className="absolute inset-0 z-0"
+                onClick={onClose}
+            />
+            <div className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+                 onClick={(e) => e.stopPropagation()}>
+                <div className="mb-4 flex items-center justify-between">
+                    <h2 className="text-xl font-semibold text-black-700">Create Task</h2>
+                    <button
+                        type={'button'}
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-gray-700"
+                        aria-label='Close'
+                    >X
+                    </button>
+                </div>
 
-                <label htmlFor={'Description'}>Description</label>
-                <input id={'Description'} type={'text'} {...register('description')} />
+                <form onSubmit={handleSubmit(data => onSubmit(data))} method={'POST'} className="space-y-4">
+                    <label htmlFor={'Title'} className="block text-sm font-medium text-gray-700">Title</label>
+                    <input id={'Title'} type={'text'} {...register('title')}
+                           className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"/>
+                    {errors.title && (
+                        <p className="mt-1 text-sm text-red-500">
+                            {errors.title.message}
+                        </p>
+                    )}
 
-                <input type={'hidden'} value={1} {...register('category.id')}/>
-                <input type={'hidden'} value={'active'} {...register('category.label')}/>
+                    <label htmlFor={'Description'}
+                           className="block text-sm font-medium text-gray-700">Description</label>
+                    <input id={'Description'} type={'text'} {...register('description')}
+                           className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    />
+                    {errors.description && (
+                        <p className="mt-1 text-sm text-red-500">
+                            {errors.description.message}
+                        </p>
+                    )}
 
-                <input type={'submit'} value={'Add Task'}/>
-            </form>
-        </>
-    );
+                    <input type={'hidden'} value={1} {...register('category.id')}/>
+                    <input type={'hidden'} value={'active'} {...register('category.label')}/>
+
+                    <div className="flex justify-end gap-2 pt-2">
+                        <button
+                            onClick={onClose}
+                            className="rounded-lg border px-4 py-2 text-sm hover:bg-gray-100"
+                        >Cancel
+                        </button>
+                        <button
+                            className="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700">Add Task
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    )
+        ;
 }
