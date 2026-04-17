@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {TaskItem} from './TaskItem.tsx';
-import {axiosGetAllTasks} from './TaskService.ts';
+import {axiosGetAllTasks, axiosDeleteTask} from './TaskService.ts';
 import type {Task} from './TaskType.ts';
 import {TaskForm} from "./TaskForm.tsx";
 
@@ -18,7 +18,7 @@ export const TaskPage = () => {
     };
 
     const handleDelete = (id: number) => {
-        deleteTask(id).then(refreshData);
+        axiosDeleteTask(id).then(refreshData);
     }
 
     useEffect(() => {
@@ -30,7 +30,7 @@ export const TaskPage = () => {
             <h2 className={'font-extrabold'}>Task List</h2>
             <ul id={"list"} className={'grid grid-cols-3 gap-4'}>
                 {tasks.length > 0 ? (
-                    tasks.map((task) => <TaskItem key={task.id} initialTask={task}/>)
+                    tasks.map((task) => <TaskItem key={task.id} initialTask={task} handleDelete={handleDelete} />)
                 ) : (
                     <li>No Tasks found.</li>
                 )}

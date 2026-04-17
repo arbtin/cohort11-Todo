@@ -1,7 +1,7 @@
 import type {Category} from "../category/CategoryType.ts";
 
 export type Task = {
-  id?: number | string | null;
+  id?: number;
   title: string;
   description: string;
   category: Category;

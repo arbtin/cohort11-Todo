@@ -1,8 +1,9 @@
 import {http, HttpResponse} from 'msw';
 import {setupServer} from 'msw/node';
 import {beforeAll, expect} from 'vitest';
-import {axiosGetAllTasks, axiosSaveTask, getAllTasks} from '../TaskService.ts';
+import {axiosDeleteTask, axiosGetAllTasks, axiosSaveTask, getAllTasks} from '../TaskService.ts';
 import type {Task} from '../TaskType.ts';
+import type {Category} from "../../category/CategoryType.ts";
 
 describe('Task Service', () => {
     //axios.defaults.baseURL = "http://localhost:8080";
@@ -41,16 +42,17 @@ describe('Task Service', () => {
 
     });
 
-    it('should delete task item', () => {
-        const deleteTask: Task = {title: 'Delete this task', description: 'This task will be deleted'};
+    it('should delete task item', async () => {
+        const category: Category = {id: 1, label: "active"};
+        const deleteTask: Task = {id: 1, title: 'Delete this task', description: 'This task will be deleted', category: category};
 
         server.use(
-            http.delete('/api/v1/task', () =>
-                HttpResponse.json(deleteTask, {status: 200}),
+            http.delete('/api/v1/task/1', () =>
+                HttpResponse.json(deleteTask, {status: 204}),
             ),
         );
 
-        expect(await axiosDeleteTask())
+        await expect(axiosDeleteTask(deleteTask.id)).resolves.toMatchObject({});
 
     });
 });

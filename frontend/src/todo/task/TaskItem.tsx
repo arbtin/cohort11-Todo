@@ -2,6 +2,7 @@ import type {Task} from './TaskType.ts';
 
 type TaskItemProps = {
     initialTask: Task;
+    handleDelete: (id: number) => void;
 };
 
 const categoryBorderMap: Record<string, string> = {
@@ -11,7 +12,7 @@ const categoryBorderMap: Record<string, string> = {
     Default: 'border-gray-300',
 };
 
-export const TaskItem = ({initialTask}: TaskItemProps) => {
+export const TaskItem = ({initialTask, handleDelete}: TaskItemProps) => {
     const borderColor =
         categoryBorderMap[initialTask.category.label] ||
         categoryBorderMap.Default;
@@ -24,7 +25,7 @@ export const TaskItem = ({initialTask}: TaskItemProps) => {
         >
             <b>{initialTask.title}</b><br/> {initialTask.description}
             <div className={`rounded-pill text-xs px-2 py-1 ${borderColor}`}>{initialTask.category.label}</div>
-            <input type={'button'} value={'Delete'} className={'rounded-full border-2 border-red-500'} />
+            <input type={'button'} value={'Delete'} className={'rounded-full border-2 border-red-500'} onClick={() => handleDelete(initialTask.id)} />
         </li>
     );
 };

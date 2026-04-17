@@ -4,6 +4,7 @@ import type {Task} from './TaskType.ts';
 type GetTasks = () => Promise<Task[]>;
 type AxiosGetTasks = () => Promise<Task[]>;
 type AxiosSaveTask = (task: Task) => Promise<Task>;
+type AxiosDeleteTask = (id: number) => Promise<void>;
 
 export const getAllTasks: GetTasks = async () => {
     return fetch('/api/v1/task', {method: 'GET'}).then((Response) => {
@@ -21,3 +22,8 @@ export const axiosSaveTask: AxiosSaveTask = (task: Task) => (axios
     .post('/api/v1/task', task)
     .then((r: AxiosResponse<Task>) => r.data)
     .catch());
+
+export const axiosDeleteTask: AxiosDeleteTask = (id: number) => (axios
+    .delete('/api/v1/task/' + id))
+    .then((r: AxiosResponse<void>) => r.data)
+    .catch();

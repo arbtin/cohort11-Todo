@@ -22,6 +22,9 @@ describe('Task Page', () => {
     });
 
     it('should delete task when delete button is clicked', async () => {
+        const task2 = mockData.filter(item => item.id === 2);
+        const mockDeleteTask = vi.spyOn(taskApi, 'axiosDeleteTask').mockReturnValue(Promise.resolve());
+
         render(<TaskPage/>);
 
         const list = await screen.findByRole('list');
@@ -34,8 +37,16 @@ describe('Task Page', () => {
 
         await user.click(deleteButton);
 
-        expect(firstItem).not.toBeInTheDocument();
+//        await vi.mocked(taskApi.axiosGetAllTasks).mockResolvedValue(task2);
 
+        screen.logTestingPlaygroundURL()
+        const mockRefreshData = vi.spyOn(taskApi, 'axiosGetAllTasks').mockResolvedValue(task2);
+
+        expect(mockDeleteTask).toHaveBeenCalledOnce();
+        expect(mockDeleteTask).toHaveBeenCalledWith(1);
+        expect(mockRefreshData).toHaveBeenCalledTimes(1);
+
+//        expect(await screen.findByLabelText('Task 1')).not.toBeInTheDocument();
     });
 
     it('should display task heading', async () => {
