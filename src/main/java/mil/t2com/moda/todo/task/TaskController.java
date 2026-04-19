@@ -40,7 +40,17 @@ public class TaskController {
             return ResponseEntity.notFound().build();
         }
     }
-    // ADD with Tests for: GetById, Put, Delete
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteTaskById(@PathVariable Long id) {
+        try {
+            taskService.deleteTaskById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    // ADD with Tests for: GetById, Put
 
     // Example
     //@GetMapping("/{taskId}")

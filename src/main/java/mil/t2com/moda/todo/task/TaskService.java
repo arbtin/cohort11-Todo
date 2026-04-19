@@ -22,7 +22,7 @@ public class TaskService {
     public Task saveTask(Task task) {
 
         Optional<Category> existsingCategory = categoryService.findCategoryByLabel(task.getCategory().getLabel());
-        if(existsingCategory.isPresent()) {
+        if (existsingCategory.isPresent()) {
 
         }
 
@@ -41,5 +41,13 @@ public class TaskService {
         return taskRepository.saveAll(tasks);
     }
 
-    // ADD with Tests for:  Put, Delete
+    public void deleteTaskById(Long id) {
+        try {
+            taskRepository.deleteById(id);
+            //return "deleted";
+        } catch (IllegalArgumentException e) {
+            //return "not found";
+        }
+    }
+        // ADD with Tests for:  Put
 }

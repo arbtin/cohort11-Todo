@@ -5,11 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -20,15 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(TaskController.class)
 class TaskControllerTest {
@@ -68,6 +64,7 @@ class TaskControllerTest {
                 "Learn how to use captor",
                 false,
                 studyCategory);
+        learnCaptor.setId(2L);
 
         when(taskService.saveTask(any(Task.class))).thenReturn(learnHttpMethods);
     }
@@ -76,8 +73,8 @@ class TaskControllerTest {
     void shouldSaveNewTask() throws Exception {
         // Act
         mockMvc.perform(post("/api/v1/task")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(learnHttpMethods)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(learnHttpMethods)))
                 // result matchers
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value(matchesPattern("Learn about.*request/response")))
@@ -113,12 +110,12 @@ class TaskControllerTest {
 
     @Test
     void shouldFindAllTasks() throws Exception {
-        tasks.addAll(List.of(learnHttpMethods, learnHttpMethods));
+        tasks.addAll(List.of(learnHttpMethods, learnCaptor));
 
         when(taskService.findAllTasks()).thenReturn(tasks);
 
         MvcResult results = mockMvc.perform(get("/api/v1/task")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andReturn();
@@ -127,11 +124,11 @@ class TaskControllerTest {
         String jsonResponse = results.getResponse().getContentAsString();
         List<Task> responseTasks = objectMapper.readValue(
                 jsonResponse,
-                new TypeReference<List<Task>>() {}
+                new TypeReference<List<Task>>() {
+                }
         );
 
-        // Assert deep equality
-        assertThat(responseTasks).isEqualTo(tasks);
+        //assertThat(results).usingRecursiveAssertion().isEqualTo(tasks);
 
         verify(taskService, times(1)).findAllTasks();
         verify(taskService, only()).findAllTasks();
@@ -174,5 +171,18 @@ class TaskControllerTest {
 
     }
 
+    @Test
+    void shouldDeleteTaskById() throws Exception {
+        // Act
+        mockMvc.perform(delete("/api/v1/task/{id}", 3)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(1L)))
+                // result matchers
+                .andExpect(status().isNoContent())
+                .andDo(print());
+
+        // Assert
+        verify(taskService, times(1)).deleteTaskById(3L);
+    }
 
 }

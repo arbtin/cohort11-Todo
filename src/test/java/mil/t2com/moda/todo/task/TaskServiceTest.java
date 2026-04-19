@@ -30,6 +30,7 @@ class TaskServiceTest {
 
     Task learnMock;
     Task learnTdd;
+    Task deleteTask;
     Category started;
     Category finished;
 
@@ -44,7 +45,10 @@ class TaskServiceTest {
         learnMock = new Task("Learn about Mocks", "Learn about Inject mocks", false, started);
         learnMock.setId(1L);
         learnTdd = new Task("Learn TDD", "I learned TDD", true, finished);
-        learnTdd.setId(2l);
+        learnTdd.setId(2L);
+
+        deleteTask = new Task("Delete Task", "this is done", true, finished);
+        deleteTask.setId(3L);
     }
 
     @Test
@@ -104,5 +108,13 @@ class TaskServiceTest {
 
         verify(taskRepository, only()).saveAll(tasks);
         assertThat(result).isEqualTo(tasks);
+    }
+
+    @Test
+    void shouldDeleteExistingTask() {
+        doNothing().when(taskRepository).deleteById(deleteTask.getId());
+        taskService.deleteTaskById(deleteTask.getId());
+
+        verify(taskRepository, times(1)).deleteById(deleteTask.getId());
     }
 }
