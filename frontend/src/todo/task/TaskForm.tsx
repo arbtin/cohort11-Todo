@@ -2,9 +2,11 @@ import {useForm} from "react-hook-form";
 import * as Yup from "yup";
 import {number, string} from "yup";
 import {axiosSaveTask} from "./TaskService.ts";
+import {getAllCategories} from "../category/CategoryService.ts";
 import type {Task} from "./TaskType.ts";
 import {yupResolver} from "@hookform/resolvers/yup/src";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
+import type {Category} from "../category/CategoryType.ts";
 
 const validationSchema = Yup.object({
         id: number(),
@@ -34,6 +36,7 @@ export const TaskForm = ({isOpen, onClose, onSuccess}: TaskFormProps) => {
         if(!isOpen) {
             reset();
         }
+        getCategories();
     }, [isOpen]);
 
     const onSubmit = async (data: Task) => {
@@ -42,6 +45,17 @@ export const TaskForm = ({isOpen, onClose, onSuccess}: TaskFormProps) => {
         onSuccess?.();
         onClose();
     }
+
+    const [categories, setCategories] = useState<Category[]>([]);
+
+    const getCategories = async () => {
+        try {
+            const data = await getAllCategories();
+            setCategories(data);
+        } catch (error) {
+            console.error('Failed to fetch categories:', error);
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -86,8 +100,17 @@ export const TaskForm = ({isOpen, onClose, onSuccess}: TaskFormProps) => {
                         </p>
                     )}
 
-                    <input type={'hidden'} value={1} {...register('category.id')}/>
-                    <input type={'hidden'} value={'active'} {...register('category.label')}/>
+                    <select {...register('category.id')}>
+                        {categories.length > 0 ? (
+                            categories.map((category) => <option
+                                key={category.id}
+                                value={category.id}
+                            >{category.label}</option>)
+                        ) : (
+                            <option value={"0"}>No Categories found.</option>
+                        )}
+                    </select>
+
 
                     <div className="flex justify-end gap-2 pt-2">
                         <button
